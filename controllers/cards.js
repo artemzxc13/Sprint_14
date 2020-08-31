@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const { errorСhecking } = require('../middlewares/err');
+const { CastError } = require('../middlewares/err');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -27,13 +27,13 @@ const deleteCard = (req, res) => {
       .then((card) => {
         if (card.owner.toString() === req.user._id) {
           return Card.findByIdAndDelete(card._id)
-            .orFail(() => new Error('Не получилось удалить'))
+            .orFail()
             .then((deletedCard) => res.send({ deletedCard, message: 'Карточка успешно удалена' }))
-            .catch((err) => res.status(404).send({ message: err.message }));
+            .catch((err) => CastError(err, req, res));
         }
         return res.status(403).send({ message: 'Вы не можете удалить чужие карточки' });
       })
-      .catch((err) => errorСhecking(err, req, res));
+      .catch((err) => CastError(err, req, res));
   }
   return res.status(400).send({ message: 'Неверный  id карточки' });
 };
@@ -47,7 +47,7 @@ const likeCard = (req, res) => {
     )
       .orFail()
       .then((card) => res.send({ data: card, message: 'Лайк успешно поставлен' }))
-      .catch((err) => errorСhecking(err, req, res));
+      .catch((err) => CastError(err, req, res));
   }
   return res.status(400).send({ message: 'Неверный формат id карточки' });
 };
@@ -61,7 +61,7 @@ const unlikeCard = (req, res) => {
     )
       .orFail()
       .then((card) => res.send({ data: card, message: 'Лайк успешно удален' }))
-      .catch((err) => errorСhecking(err, req, res));
+      .catch((err) => CastError(err, req, res));
   }
   return res.status(400).send({ message: 'Неверный формат id карточки' });
 };

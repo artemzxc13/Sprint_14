@@ -43,7 +43,7 @@ const createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!password) return res.status(400).send({ message: 'Обязательное поле' });
+  if (!password) return res.status(400).send({ message: ' Пароль - Обязательное поле' });
   if (!schema.validate(password)) {
     return res.status(400).send({ message: 'Пароль должен быть от 8 до 16 знаков' });
   }
@@ -58,8 +58,8 @@ const createUser = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        if (err.errors.email === 'unique') {
-          return res.status(406).send({ message: err.message });
+        if (err.errors.email && err.errors.email.kind === 'unique') {
+          return res.status(409).send({ message: err.message });
         }
         return res.status(400).send({ message: err.message });
       }

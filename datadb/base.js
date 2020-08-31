@@ -1,6 +1,7 @@
 const data = 'mongodb://localhost:27017/mestodb';
 const PORT = '3000';
 const HOST = 'http://localhost';
+
 const db = {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -8,6 +9,7 @@ const db = {
   useUnifiedTopology: true,
   connectTimeoutMS: 0,
 };
+
 const urlValidation = {
   protocols: ['http', 'https'],
   require_protocol: true,
@@ -20,7 +22,6 @@ const urlValidation = {
 const emailValidation = {
   require_tld: true,
 };
-
 module.exports = {
   urlValidation, db, data, PORT, HOST, emailValidation,
 };

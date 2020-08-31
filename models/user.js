@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
     validate: {
       validator: (email) => validator.isEmail(email, emailValidation),
