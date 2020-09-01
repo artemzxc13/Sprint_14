@@ -15,11 +15,9 @@ const getUsers = (req, res) => {
 const getUser = (req, res) => {
   if (mongoose.Types.ObjectId.isValid(req.params.userId)) {
     return User.findById(req.params.userId)
-      .orFail(
-        () => new Error(`Пользователь с таким _id ${req.params.userId} не найден`),
-      )
+      .orFail()
       .then((user) => res.send({ data: user }))
-      .catch((err) => res.status(404).send({ message: err.message }));
+      .catch((err) => errorСhecking(err, res));
   }
   return res.status(400).send({ message: 'Неверный формат id пользователя' });
 };
@@ -43,7 +41,7 @@ const createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!password) return res.status(400).send({ message: ' Пароль - Обязательное поле' });
+  if (!password) return res.status(400).send({ message: 'Пароль - Обязательное поле' });
   if (!schema.validate(password)) {
     return res.status(400).send({ message: 'Пароль должен быть от 8 до 16 знаков' });
   }
@@ -95,9 +93,10 @@ const updateAvatar = (req, res) => {
 };
 
 const login = (req, res) => {
-  if (!req.body.email) return res.status(400).json({ message: 'Email должен быть заполнен' });
-  if (!req.body.password) return res.status(400).json({ message: 'Пароль должен быть заполнен' });
-  return User.findUserByCredentials(req.body.email, req.body.password)
+  const { email, password } = req.body;
+  if (!email) return res.status(400).json({ message: 'Email должен быть заполнен' });
+  if (!password) return res.status(400).json({ message: 'Пароль должен быть заполнен' });
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, key, { expiresIn: '7d' });
       res.cookie('jwt', token, {

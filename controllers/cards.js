@@ -35,7 +35,7 @@ const deleteCard = (req, res) => {
       })
       .catch((err) => CastError(err, req, res));
   }
-  return res.status(400).send({ message: 'Неверный  id карточки' });
+  return res.status(400).send({ message: 'Неверный id карточки' });
 };
 
 const likeCard = (req, res) => {
