@@ -12,14 +12,19 @@ const getUsers = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
+// eslint-disable-next-line consistent-return
 const getUser = (req, res) => {
   if (mongoose.Types.ObjectId.isValid(req.params.userId)) {
     return User.findById(req.params.userId)
       .orFail()
       .then((user) => res.send({ data: user }))
-      .catch((err) => errorСhecking(err, res));
+      .catch((err) => {
+        if (err.name === 'DocumentNotFoundError') {
+          return res.status(404).send({ message: `Пользователь с _id ${req.params.userId} не найден` });
+        }
+        return res.status(500).send({ message: err.message });
+      });
   }
-  return res.status(400).send({ message: 'Неверный формат id пользователя' });
 };
 
 const schema = new PasswordValidator();
